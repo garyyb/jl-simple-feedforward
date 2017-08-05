@@ -38,7 +38,7 @@ function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
     num_changes = n.num_layers - 1
     for i = 1:num_changes
         push!(bias_changes, zeros(n.biases[i]))
-        push!(weight_changes, zeroes(n.weights[i]))
+        push!(weight_changes, zeros(n.weights[i]))
     end
 
     # FORWARD!
@@ -64,7 +64,7 @@ function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
 
     for i = 1:num_layers - 2
         z = z_vectors[num_zs - i]
-        error = (n.weights[num_layers - i + 1]') * error * n.activator_derivative(z)
+        error = (n.weights[num_changes - i + 1]') * error * n.activator_derivative(z)
         bias_changes[num_changes - i] = error
         weight_changes[num_changes - i] = error*activations[num_activations - i - 1]'
     end
