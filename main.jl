@@ -2,7 +2,7 @@ include("Network.jl")
 import FeedForward
 
 function sigmoid(x::Vector{Float64})
-    return 1.0./(1.0 .+ exp(-1 .* x))
+    return 1.0./(1.0 .+ exp.(-1 .* x))
 end
 
 function sigmoid_prime(x::Vector{Float64})
@@ -35,7 +35,21 @@ function main()
 
     println(data)
 
-    FeedForward.SGD(network, data, 5, 2, 1.0)
+    FeedForward.SGD(network, data, 1000, 2, 5.0)
+    println("Ending Biases:")
+    println(network.biases)
+    println("Ending Weights")
+    println(network.weights)
+
+    println("Input 0,0 :", FeedForward.evaluate(network, [0.0, 0.0])[1])
+    println("Input 0,1 :", FeedForward.evaluate(network, [0.0, 1.0])[1])
+    println("Input 1,0 :", FeedForward.evaluate(network, [1.0, 0.0])[1])
+    println("Input 1,1 :", FeedForward.evaluate(network, [1.0, 1.0])[1])
+
+    println("Input 0,0 :", FeedForward.evaluate(network, [0.0, 0.0])[1] < 0.5 ? 0 : 1)
+    println("Input 0,1 :", FeedForward.evaluate(network, [0.0, 1.0])[1] < 0.5 ? 0 : 1)
+    println("Input 1,0 :", FeedForward.evaluate(network, [1.0, 0.0])[1] < 0.5 ? 0 : 1)
+    println("Input 1,1 :", FeedForward.evaluate(network, [1.0, 1.0])[1] < 0.5 ? 0 : 1)
 end
 
 main()

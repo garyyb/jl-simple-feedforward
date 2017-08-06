@@ -56,15 +56,15 @@ function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
     # RETREAT!
     num_activations = length(activations)
     num_zs = length(z_vectors)
-    error = n.cost_derivative(activations[num_activations], output) *
+    error = n.cost_derivative(activations[num_activations], output) .*
             n.activator_derivative(z_vectors[num_zs])
 
     bias_changes[num_changes] = error
     weight_changes[num_changes] = error*(activations[num_activations - 1]')
 
-    for i = 1:num_layers - 2
+    for i = 1:n.num_layers - 2
         z = z_vectors[num_zs - i]
-        error = (n.weights[num_changes - i + 1]') * error * n.activator_derivative(z)
+        error = (n.weights[num_changes - i + 1]') * error .* n.activator_derivative(z)
         bias_changes[num_changes - i] = error
         weight_changes[num_changes - i] = error*activations[num_activations - i - 1]'
     end
@@ -86,7 +86,7 @@ function update(n::Network, batch::Array{Tuple{Vector{Float64}, Vector{Float64}}
     end
 
     rate = training_rate / length(batch)
-    for i = 1:num_layers - 1
+    for i = 1:n.num_layers - 1
         n.biases[i] = n.biases[i] - rate*bias_change[i]
         n.weights[i] = n.weights[i] - rate*weight_change[i]
     end
@@ -99,13 +99,22 @@ function SGD(n::Network, training_data::Array{Tuple{Vector{Float64}, Vector{Floa
         shuffle!(training_data)
         batches = [training_data[j:j+batch_size] for j in collect(1:num_data:batch_size)]
         for batch in batches
-            println("Batch in epoch ", i)
-            println(batch)
+            #println("Batch in epoch ", i)
+            #println(batch)
             update(n, batch, training_rate)
         end
     end
 end
 
+function evaluate(n::Network, data::Vector{Float64})
+    result = deepcopy(data)
+    for (bias, weight) in zip(n.biases, n.weights)
+        result = n.activator(weight*result + bias)
+    end
+    return result
+end
+
 export Network
 export SGD
+export evaluate
 end
