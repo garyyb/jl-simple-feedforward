@@ -34,7 +34,7 @@ end
 function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
     bias_changes = Vector{Float64}[]
     weight_changes = Matrix{Float64}[]
-
+    # TODO: replace with lists comprehension if it works below, in update().
     num_changes = n.num_layers - 1
     for i = 1:num_changes
         push!(bias_changes, zeros(n.biases[i]))
@@ -70,6 +70,26 @@ function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
     end
 
     return (bias_changes, weight_changes)
+end
+
+function update(n::Network, batch::Array{Tuple{Vector{Float64}, Vector{Float4}}},
+                training_rate::float64)
+    bias_change = [zeros(b) for b in n.biases]
+    weight_change = [zeros(w) for w in n.weights]
+
+    for (x, y) in batch
+        (bias_changes, weight_changes) = backprop(n, x, y)
+        for i = 1:n.num_layers - 1
+            bias_change[i] = bias_change[i] + bias_changes[i]
+            weight_change[i] = weight_change[i] + weight_changes[i]
+        end
+    end
+
+    rate = training_rate / length(batch)
+    for i = 1:num_layers - 1
+        n.biases[i] = n.biases[i] - rate*bias_change[i]
+        n.weights[i] = n.weights[i] - rate*weight_change[i]
+    end
 end
 
 export Network
