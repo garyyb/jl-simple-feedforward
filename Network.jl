@@ -42,7 +42,7 @@ function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
     end
 
     # FORWARD!
-    activaton = initial
+    activation = initial
     activations = [activation]
     z_vectors = Vector{Float64}[]
 
@@ -72,7 +72,7 @@ function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
     return (bias_changes, weight_changes)
 end
 
-function update(n::Network, batch::Array{Tuple{Vector{Float64}}},
+function update(n::Network, batch::Array{Tuple{Vector{Float64}, Vector{Float64}}, 1},
                 training_rate::Float64)
     bias_change = [zeros(b) for b in n.biases]
     weight_change = [zeros(w) for w in n.weights]
@@ -92,15 +92,20 @@ function update(n::Network, batch::Array{Tuple{Vector{Float64}}},
     end
 end
 
-function SGD(n::Network, training_data::Array{Tuple{Vector{Float64}}},
+function SGD(n::Network, training_data::Array{Tuple{Vector{Float64}, Vector{Float64}}, 1},
              epochs::Int, batch_size::Int, training_rate::Float64)
     num_data = length(training_data)
     for i = 1:epochs
         shuffle!(training_data)
-        batch = [training_data[j:j+batch_size] for j in collect(1:num_data:batch_size)]
-        update(batch)
+        batches = [training_data[j:j+batch_size] for j in collect(1:num_data:batch_size)]
+        for batch in batches
+            println("Batch in epoch ", i)
+            println(batch)
+            update(n, batch, training_rate)
+        end
     end
 end
 
 export Network
+export SGD
 end
