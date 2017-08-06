@@ -72,8 +72,8 @@ function backprop(n::Network, initial::Vector{Float64}, output::Vector{Float64})
     return (bias_changes, weight_changes)
 end
 
-function update(n::Network, batch::Array{Tuple{Vector{Float64}, Vector{Float4}}},
-                training_rate::float64)
+function update(n::Network, batch::Array{Tuple{Vector{Float64}}},
+                training_rate::Float64)
     bias_change = [zeros(b) for b in n.biases]
     weight_change = [zeros(w) for w in n.weights]
 
@@ -89,6 +89,16 @@ function update(n::Network, batch::Array{Tuple{Vector{Float64}, Vector{Float4}}}
     for i = 1:num_layers - 1
         n.biases[i] = n.biases[i] - rate*bias_change[i]
         n.weights[i] = n.weights[i] - rate*weight_change[i]
+    end
+end
+
+function SGD(n::Network, training_data::Array{Tuple{Vector{Float64}}},
+             epochs::Int, batch_size::Int, training_rate::Float64)
+    num_data = length(training_data)
+    for i = 1:epochs
+        shuffle!(training_data)
+        batch = [training_data[j:j+batch_size] for j in collect(1:num_data:batch_size)]
+        update(batch)
     end
 end
 
