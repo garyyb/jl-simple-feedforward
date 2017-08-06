@@ -4,6 +4,11 @@ purpose of practice.
 
 It only supports a single activation function. It's also rather unoptimized.
 
+To use the module, include Network.jl and do
+```Julia
+import FeedForward
+```
+
 To initialise the Network,
 
 ```Julia
