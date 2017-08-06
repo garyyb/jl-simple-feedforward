@@ -27,9 +27,9 @@ function main()
     in4 = [1.0;1.0]
 
     out1 = [0.0]
-    out2 = [0.0]
-    out3 = [0.0]
-    out4 = [1.0]
+    out2 = [1.0]
+    out3 = [1.0]
+    out4 = [0.0]
 
     data = [(in1, out1), (in2, out2), (in3, out3), (in4, out4)]
 
